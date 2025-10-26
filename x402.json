@@ -6,11 +6,11 @@
       "network": "base",
       "maxAmountRequired": "0",
       "resource": "hawk",
-      "description": "Hawk x402 endpoint (free listing)",
+      "description": "Hawk x402 endpoint - USDC token sale",
       "mimeType": "json",
       "payTo": "0xf8F6224250004A4Cd77f79253f5151232576eaAE",
       "maxTimeoutSeconds": 30,
-      "asset": "eth",
+      "asset": "usdc",
       "outputSchema": {
         "input": {
           "type": "http",
