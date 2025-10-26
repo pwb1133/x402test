@@ -7,19 +7,60 @@
   <style>
     body{font-family:system-ui,Arial,sans-serif;text-align:center;padding-top:120px}
     h1{margin-bottom:24px}
-    a{display:block;margin:12px auto;width:max-content;font-size:20px;color:#0b5ed7;text-decoration:underline}
-    .note{margin-top:24px;color:#444;font-size:14px;max-width:720px;margin-left:auto;margin-right:auto}
-    code{background:#f5f5f5;border:1px solid #eee;border-radius:4px;padding:0 4px}
+    a.link{display:inline-block;margin:12px;font-size:20px;color:#0b5ed7;text-decoration:underline;cursor:pointer}
+    #msg{margin-top:20px;color:#444}
   </style>
 </head>
 <body>
   <h1>X402TEST</h1>
-  <a href="ethereum:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913/transfer?address=0xb07E4c90B7E1e17Fd72Bb3aeaDe939b5D7C236e3&uint256=1000000@8453">Small Buy (1 USDC)</a>
-  <a href="ethereum:0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913/transfer?address=0xb07E4c90B7E1e17Fd72Bb3aeaDe939b5D7C236e3&uint256=10000000@8453">Big Buy (10 USDC)</a>
+  <a class="link" id="buy1">Small Buy (1 USDC)</a>
+  <a class="link" id="buy10">Big Buy (10 USDC)</a>
+  <div id="msg"></div>
 
-  <div class="note">
-    If nothing happens when you click, your browser isn't handing <code>ethereum:</code> links to MetaMask.<br>
-    Try the steps in the README below.
-  </div>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.min.js"></script>
+  <script>
+    const CHAIN_ID = '0x2105'; // Base Mainnet
+    const USDC = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
+    const TO   = '0xb07E4c90B7E1e17Fd72Bb3aeaDe939b5D7C236e3';
+    const msg  = document.getElementById('msg');
+
+    function say(t){ msg.textContent = t; }
+
+    async function ensureBase() {
+      try {
+        await window.ethereum.request({ method:'wallet_switchEthereumChain', params:[{ chainId: CHAIN_ID }] });
+      } catch(e) {
+        if (e.code === 4902) {
+          await window.ethereum.request({
+            method:'wallet_addEthereumChain',
+            params:[{ chainId: CHAIN_ID, chainName:'Base Mainnet', nativeCurrency:{name:'ETH',symbol:'ETH',decimals:18}, rpcUrls:['https://mainnet.base.org'], blockExplorerUrls:['https://basescan.org'] }]
+          });
+        } else { throw e; }
+      }
+    }
+
+    async function send(usdcAmount) {
+      try {
+        if (!window.ethereum) { say('Install MetaMask to continue.'); return; }
+        await ensureBase();
+        const [from] = await window.ethereum.request({ method:'eth_requestAccounts' });
+
+        // encode transfer(to, amount) with ethers
+        const iface = new ethers.Interface(['function transfer(address to,uint256 amount) returns (bool)']);
+        const data  = iface.encodeFunctionData('transfer', [TO, BigInt(usdcAmount) * 1000000n]);
+
+        const txHash = await window.ethereum.request({
+          method:'eth_sendTransaction',
+          params:[{ from, to: USDC, data, value:'0x0' }]
+        });
+        say('Submitted: ' + txHash);
+      } catch (e) {
+        say(e && e.message ? e.message : String(e));
+      }
+    }
+
+    document.getElementById('buy1').onclick  = () => send(1);
+    document.getElementById('buy10').onclick = () => send(10);
+  </script>
 </body>
 </html>
