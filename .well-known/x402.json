@@ -1,0 +1,15 @@
+{
+  "x402Version": 1,
+  "accepts": [
+    {
+      "scheme": "exact",
+      "network": "base",
+      "resource": "hawk",
+      "description": "Hawk x402 endpoint",
+      "mimeType": "json",
+      "maxTimeoutSeconds": 30,
+      "asset": "eth"
+    }
+  ],
+  "payer": "0xf8F6224250004A4Cd77f79253f5151232576eaAE"
+}
