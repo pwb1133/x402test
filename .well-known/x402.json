@@ -4,26 +4,42 @@
     {
       "scheme": "exact",
       "network": "base",
-      "maxAmountRequired": "0",
+      "maxAmountRequired": "1",
       "resource": "hawk",
-      "description": "Hawk x402 endpoint - USDC token sale",
-      "mimeType": "json",
-      "payTo": "0xf8F6224250004A4Cd77f79253f5151232576eaAE",
-      "maxTimeoutSeconds": 30,
+      "description": "Hawk token purchase (1 USDC)",
+      "mimeType": "application/json",
+      "payTo": "0xf8F6224250004A4Cd77f79253f5151232576eaAE",   // 
+      "maxTimeoutSeconds": 300,
       "asset": "usdc",
-      "outputSchema": {
-        "input": {
-          "type": "http",
-          "method": "GET",
-          "bodyType": "json",
-          "queryParams": {},
-          "bodyFields": {},
-          "headerFields": {}
-        },
-        "output": {}
-      },
-      "extra": {}
+      "outputSchema": { "...": "..." },
+      "extra": { "amount": "1" }
+    },
+    {
+      "scheme": "exact",
+      "network": "base",
+      "maxAmountRequired": "10",
+      "resource": "hawk",
+      "description": "Hawk token purchase (10 USDC)",
+      "mimeType": "application/json",
+      "payTo": "0xf8F6224250004A4Cd77f79253f5151232576eaAE",   // 
+      "maxTimeoutSeconds": 300,
+      "asset": "usdc",
+      "outputSchema": { "...": "..." },
+      "extra": { "amount": "10" }
+    },
+    {
+      "scheme": "exact",
+      "network": "base",
+      "maxAmountRequired": "50",
+      "resource": "hawk",
+      "description": "Hawk token purchase (50 USDC)",
+      "mimeType": "application/json",
+      "payTo": "0xf8F6224250004A4Cd77f79253f5151232576eaAE",   // 
+      "maxTimeoutSeconds": 300,
+      "asset": "usdc",
+      "outputSchema": { "...": "..." },
+      "extra": { "amount": "50" }
     }
   ],
-  "payer": "0xf8F6224250004A4Cd77f79253f5151232576eaAE"
+  "payer": "0xf8F6224250004A4Cd77f79253f5151232576eaAE"          // 
 }
