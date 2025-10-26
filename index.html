@@ -3,21 +3,26 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>X402TEST</title>
+  <title>HAWK | X402</title>
   <style>
     body { font-family: system-ui, Arial, sans-serif; color:#111; margin:0; padding:20px; background:#fff; }
-    h1 { font-size:24px; margin-bottom:12px; }
+    img.logo { width: 120px; display:block; margin-bottom:10px; }
+    h1 { font-size:24px; margin-bottom:6px; }
+    .subtitle { color:#555; font-size:14px; margin-bottom:14px; }
     a.link { display:inline-block; margin-right:12px; font-size:18px; color:#0b5ed7; text-decoration:underline; cursor:pointer; }
+    #sent { font-size:16px; font-weight:500; margin-bottom:14px; }
     #msg { margin-top:16px; color:#444; white-space:pre-line; }
     #err { margin-top:8px; color:#b00020; white-space:pre-line; font-size:14px; }
-    #sent { font-size:16px; font-weight:500; margin-bottom:16px; }
   </style>
 </head>
 <body>
-  <h1>X402TEST</h1>
+  <img src="98b8d5d3-b67b-486c-9423-870c4108f162.png" alt="HAWK Logo" class="logo" />
+  <h1>HAWK | X402</h1>
+  <div class="subtitle">Base Chain</div>
   <div id="sent">You sent: 0 USD</div>
   <a class="link" id="buy1">Small Buy (1 USDC)</a>
   <a class="link" id="buy10">Big Buy (10 USDC)</a>
+  <a class="link" id="buy50">Whale Buy (50 USDC)</a>
   <div id="msg"></div>
   <div id="err"></div>
 
@@ -83,15 +88,14 @@
           params:[{ from, to: USDC, data, value:'0x0' }]
         });
         say('Transaction sent: ' + txHash);
-        // Update total after short delay
         setTimeout(()=>fetchTotalSent(from), 10000);
       } catch(e){ logErr(e); say('Error during transaction.'); }
     }
 
     document.getElementById('buy1').onclick = ()=>send(1);
     document.getElementById('buy10').onclick = ()=>send(10);
+    document.getElementById('buy50').onclick = ()=>send(50);
 
-    // auto load on connect
     window.addEventListener('load', async()=>{
       try{
         const [from] = await window.ethereum.request({ method:'eth_requestAccounts' });
