@@ -1,10 +1,11 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>HAWK | X402</title>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>HAWK | X402</title>
+<style>
     body { font-family: system-ui, Arial, sans-serif; color:#111; margin:0; padding:20px; background:#fff; }
     img.logo { width: 120px; display:block; margin-bottom:10px; }
     h1 { font-size:24px; margin-bottom:6px; }
@@ -16,18 +17,17 @@
   </style>
 </head>
 <body>
-  <img src="hawk-logo.png" alt="HAWK Logo" class="logo" />
-  <h1>HAWK | X402</h1>
-  <div class="subtitle">Base Chain</div>
-  <div id="sent">You sent: 0 USD</div>
-  <a class="link" id="buy1">Small Buy (1 USDC)</a>
-  <a class="link" id="buy10">Big Buy (10 USDC)</a>
-  <a class="link" id="buy50">Whale Buy (50 USDC)</a>
-  <div id="msg"></div>
-  <div id="err"></div>
-
-  <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js"></script>
-  <script>
+<img alt="HAWK Logo" class="logo" src="hawk-logo.png"/>
+<h1>HAWK | X402</h1>
+<div class="subtitle">Base Chain</div>
+<div id="sent">You sent: 0 USD</div>
+<a class="link" id="buy1">Small Buy (1 USDC)</a>
+<a class="link" id="buy10">Big Buy (10 USDC)</a>
+<a class="link" id="buy50">Whale Buy (50 USDC)</a>
+<div id="msg"></div>
+<div id="err"></div>
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js"></script>
+<script>
     const provider = new ethers.JsonRpcProvider('https://mainnet.base.org');
     const CHAIN_ID = '0x2105';
     const USDC = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
@@ -103,5 +103,5 @@
       }catch(e){ /* not connected yet */ }
     });
   </script>
-</body>
+<a href="https://x.com/hawkdotxyz" target="_blank">@hawkdotxyz</a></body>
 </html>
