@@ -5,34 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>X402TEST</title>
   <style>
-    body { font-family: system-ui, Arial, sans-serif; text-align: center; padding-top: 120px; }
-    h1 { margin-bottom: 24px; }
-    a.link { display: inline-block; margin: 12px; font-size: 20px; color: #0b5ed7; text-decoration: underline; cursor: pointer; }
-    #msg { margin-top: 20px; color: #444; min-height: 24px; white-space: pre-line; }
-    #err { margin-top: 10px; color: #b00020; white-space: pre-line; font-size: 14px; }
+    body { font-family: system-ui, Arial, sans-serif; color:#111; margin:0; padding:20px; background:#fff; }
+    h1 { font-size:24px; margin-bottom:12px; }
+    a.link { display:inline-block; margin-right:12px; font-size:18px; color:#0b5ed7; text-decoration:underline; cursor:pointer; }
+    #msg { margin-top:16px; color:#444; white-space:pre-line; }
+    #err { margin-top:8px; color:#b00020; white-space:pre-line; font-size:14px; }
+    #sent { font-size:16px; font-weight:500; margin-bottom:16px; }
   </style>
 </head>
 <body>
   <h1>X402TEST</h1>
+  <div id="sent">You sent: 0 USD</div>
   <a class="link" id="buy1">Small Buy (1 USDC)</a>
   <a class="link" id="buy10">Big Buy (10 USDC)</a>
   <div id="msg"></div>
   <div id="err"></div>
 
-  <!-- Load ethers BEFORE our script (UMD build exposes global `ethers`) -->
   <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js"></script>
   <script>
-    const CHAIN_ID = '0x2105'; // Base Mainnet
-    const USDC = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'; // Base native USDC
-    const TO   = '0xb07E4c90B7E1e17Fd72Bb3aeaDe939b5D7C236e3';  // recipient
-    const msg  = document.getElementById('msg');
-    const err  = document.getElementById('err');
+    const provider = new ethers.JsonRpcProvider('https://mainnet.base.org');
+    const CHAIN_ID = '0x2105';
+    const USDC = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
+    const PROJECT = '0xb07E4c90B7E1e17Fd72Bb3aeaDe939b5D7C236e3';
+    const sentEl = document.getElementById('sent');
+    const msg = document.getElementById('msg');
+    const err = document.getElementById('err');
 
     function say(t){ msg.textContent = t; }
-    function logErr(e){ 
-      console.error(e); 
-      err.textContent = (e && e.message) ? e.message : String(e);
-    }
+    function logErr(e){ console.error(e); err.textContent = e && e.message ? e.message : String(e); }
 
     async function ensureBase() {
       try {
@@ -51,29 +51,53 @@
       }
     }
 
-    async function send(usdcAmount) {
-      err.textContent = ''; // clear previous
+    async function fetchTotalSent(myAddr){
       try {
-        if (!window.ethereum) { say('MetaMask not found. Please install it.'); return; }
-        say('Connecting wallet...');
+        const iface = new ethers.Interface(['event Transfer(address indexed from, address indexed to, uint256 value)']);
+        const topicTransfer = iface.getEventTopic('Transfer');
+        const topics = [topicTransfer, ethers.zeroPadValue(myAddr, 32), ethers.zeroPadValue(PROJECT, 32)];
+        const latest = await provider.getBlockNumber();
+        const fromBlock = latest - 2000000; // roughly last few months
+        const logs = await provider.getLogs({ address: USDC, fromBlock, toBlock: 'latest', topics });
+        let total = 0n;
+        for (const l of logs){
+          const parsed = iface.parseLog(l);
+          total += parsed.args.value;
+        }
+        const usd = Number(total) / 1e6;
+        sentEl.textContent = `You sent: ${usd.toLocaleString(undefined,{maximumFractionDigits:2})} USD`;
+      } catch(e){ logErr(e); }
+    }
+
+    async function send(usdcAmount){
+      err.textContent = '';
+      try {
+        if(!window.ethereum){ say('MetaMask not found.'); return; }
         await ensureBase();
         const [from] = await window.ethereum.request({ method:'eth_requestAccounts' });
         say('Preparing transaction...');
         const iface = new ethers.Interface(['function transfer(address to,uint256 amount) returns (bool)']);
-        const data  = iface.encodeFunctionData('transfer', [TO, BigInt(usdcAmount) * 1000000n]); // USDC 6d
+        const data = iface.encodeFunctionData('transfer',[PROJECT, BigInt(usdcAmount)*1000000n]);
         const txHash = await window.ethereum.request({
           method:'eth_sendTransaction',
           params:[{ from, to: USDC, data, value:'0x0' }]
         });
         say('Transaction sent: ' + txHash);
-      } catch (e) {
-        logErr(e);
-        say('Error during transaction.');
-      }
+        // Update total after short delay
+        setTimeout(()=>fetchTotalSent(from), 10000);
+      } catch(e){ logErr(e); say('Error during transaction.'); }
     }
 
-    document.getElementById('buy1').onclick  = () => send(1);
-    document.getElementById('buy10').onclick = () => send(10);
+    document.getElementById('buy1').onclick = ()=>send(1);
+    document.getElementById('buy10').onclick = ()=>send(10);
+
+    // auto load on connect
+    window.addEventListener('load', async()=>{
+      try{
+        const [from] = await window.ethereum.request({ method:'eth_requestAccounts' });
+        fetchTotalSent(from);
+      }catch(e){ /* not connected yet */ }
+    });
   </script>
 </body>
 </html>
