@@ -4,11 +4,25 @@
     {
       "scheme": "exact",
       "network": "base",
+      "maxAmountRequired": "0",
       "resource": "hawk",
-      "description": "Hawk x402 endpoint",
+      "description": "Hawk x402 endpoint (free listing)",
       "mimeType": "json",
+      "payTo": "0xf8F6224250004A4Cd77f79253f5151232576eaAE",
       "maxTimeoutSeconds": 30,
-      "asset": "eth"
+      "asset": "eth",
+      "outputSchema": {
+        "input": {
+          "type": "http",
+          "method": "GET",
+          "bodyType": "json",
+          "queryParams": {},
+          "bodyFields": {},
+          "headerFields": {}
+        },
+        "output": {}
+      },
+      "extra": {}
     }
   ],
   "payer": "0xf8F6224250004A4Cd77f79253f5151232576eaAE"
