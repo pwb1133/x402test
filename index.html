@@ -1,37 +1,36 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>HAWK | X402</title>
 <style>
-    body { font-family: system-ui, Arial, sans-serif; color:#111; margin:0; padding:20px; background:#fff; }
-    img.logo { width: 120px; display:block; margin-bottom:10px; }
-    h1 { font-size:24px; margin-bottom:6px; }
-    .subtitle { color:#555; font-size:14px; margin-bottom:14px; }
-    a.link { display:inline-block; margin-right:12px; font-size:18px; color:#0b5ed7; text-decoration:underline; cursor:pointer; }
-    #sent { font-size:16px; font-weight:500; margin-bottom:14px; }
-    #msg { margin-top:16px; color:#444; white-space:pre-line; }
-    #err { margin-top:8px; color:#b00020; white-space:pre-line; font-size:14px; }
-  </style>
+  body { font-family: system-ui, Arial, sans-serif; color:#111; margin:0; padding:20px; background:#fff; }
+  img.logo { width: 120px; display:block; margin-bottom:10px; }
+  h1 { font-size:24px; margin-bottom:6px; }
+  .subtitle { color:#555; font-size:14px; margin-bottom:14px; }
+  a.link { display:inline-block; margin-right:12px; font-size:18px; color:#0b5ed7; text-decoration:underline; cursor:pointer; }
+  #sent { font-size:16px; font-weight:500; margin-bottom:14px; }
+  #msg { margin-top:16px; color:#444; white-space:pre-line; }
+  #err { margin-top:8px; color:#b00020; white-space:pre-line; font-size:14px; }
+</style>
 </head>
 <body>
-<img alt="HAWK Logo" class="logo" src="hawk-logo.png"/>
-<h1>HAWK | X402</h1>
-<div class="subtitle">Base Chain</div>
-<div id="sent">You sent: 0 USD</div>
-<a class="link" id="buy1">Small Buy (1 USDC)</a>
-<a class="link" id="buy10">Big Buy (10 USDC)</a>
-<a class="link" id="buy50">Whale Buy (50 USDC)</a>
-<div id="msg"></div>
-<div id="err"></div>
-<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js"></script>
-<script>
+  <img alt="HAWK Logo" class="logo" src="hawk-logo.png"/>
+  <h1>HAWK | X402</h1>
+  <div class="subtitle">Base Chain</div>
+  <div id="sent">You sent: 0 USD</div>
+  <a class="link" href="/api/purchase?amount=1"  target="_blank">Small Buy (1 USDC)</a>
+  <a class="link" href="/api/purchase?amount=10" target="_blank">Big Buy (10 USDC)</a>
+  <a class="link" href="/api/purchase?amount=50" target="_blank">Whale Buy (50 USDC)</a>
+  <div id="msg"></div>
+  <div id="err"></div>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js"></script>
+  <script>
     const provider = new ethers.JsonRpcProvider('https://mainnet.base.org');
     const CHAIN_ID = '0x2105';
     const USDC = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
-    const PROJECT = '0xf8F6224250004A4Cd77f79253f5151232576eaAE'; // updated recipient
+    const PROJECT = '0xf8F6224250004A4Cd77f79253f5151232576eaAE';
     const sentEl = document.getElementById('sent');
     const msg = document.getElementById('msg');
     const err = document.getElementById('err');
@@ -62,7 +61,7 @@
         const topicTransfer = iface.getEventTopic('Transfer');
         const topics = [topicTransfer, ethers.zeroPadValue(myAddr, 32), ethers.zeroPadValue(PROJECT, 32)];
         const latest = await provider.getBlockNumber();
-        const fromBlock = latest - 2000000; // roughly last few months
+        const fromBlock = latest - 2000000;
         const logs = await provider.getLogs({ address: USDC, fromBlock, toBlock: 'latest', topics });
         let total = 0n;
         for (const l of logs){
@@ -92,16 +91,13 @@
       } catch(e){ logErr(e); say('Error during transaction.'); }
     }
 
-    document.getElementById('buy1').onclick = ()=>send(1);
-    document.getElementById('buy10').onclick = ()=>send(10);
-    document.getElementById('buy50').onclick = ()=>send(50);
-
     window.addEventListener('load', async()=>{
       try{
         const [from] = await window.ethereum.request({ method:'eth_requestAccounts' });
         fetchTotalSent(from);
-      }catch(e){ /* not connected yet */ }
+      }catch(e){ }
     });
   </script>
-<a href="https://x.com/hawkdotxyz" target="_blank">@hawkdotxyz</a></body>
+  <a href="https://x.com/hawkdotxyz" target="_blank">@hawkdotxyz</a>
+</body>
 </html>
